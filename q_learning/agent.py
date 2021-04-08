@@ -42,10 +42,10 @@ class Agent():
             self.epsilon = self.eps_min
 
     def learn(self, state, action, reward, new_state):
-        actions = np.array([self.Q[(state, a) for a in range(n_actions)]])
+        actions = np.array([self.Q[(state, a)] for a in range(self.n_actions)])
         a_max = np.argmax(actions)
 
-        self.Q[(state, action)] += self.lr * (reward + self.gamma *
+        self.Q[(state, action)] += self.learning_rate * (reward + self.discount_factor *
                                             self.Q[(new_state, a_max)] - 
                                             self.Q[(state, action)])
 

@@ -4,58 +4,59 @@ import numpy as np
 import gym 
 from agent import Agent
 
-def update_q_value(reward): # I have to write this function
-    
+if __name__ == '__main__':
 
-# Q is a dictionary with states and actions as keys
+    # Variables
+    learning_rate = 0.001
+    discount_factor = 0.9
+    epsilon = 1.0
+    eps_min = 0.01
+    eps_dec = 0.999995
+    n_actions = 4
+    n_states = 16
+    EPISODES = 500000
+
+    # Initialization of environment & Agent
+    env = gym.make("FrozenLake-v0")
+    agent = Agent(learning_rate, discount_factor, n_actions, n_states, epsilon, eps_min, eps_dec)
+
+    # Keep track of scores & average win percentage
+    scores = []
+    avg_score = []
 
 
-# Initialize Q for all states s and actions a
+    for episode in range(EPISODES):
+        # Initialize state s
+        state = env.reset()
+        done = False
+        score = 0
 
-Q = INIT # HOW DO I DO THAT?
-alpha = 0.001
-gamma = 0.9
-e_max = 1
-e_min = 0.01
-EPISODES = 5000
+        # For each step of the episode:
+        while not done:
+            # Choose an action a in current state s with an epsilon-greedy strategy
+            action = agent.choose_action(state)
 
-scores = []
-avg_score = []
+            # Perform action a, get new state s' and get reward r
+            new_state, reward, done, info = env.step(action)
 
-env = gym.make("CartPole-v1")
+            # Plug in reward r into update equation to get new estimation for Q(s,a)
+            agent.learn(state, action, reward, new_state)
 
+            # Update score
+            score += reward 
 
-for episode in range(EPISODES):
-    # Initialize state s
-    # IS state env or observation?
-    # I think the observation is the state
-    state = env.reset()
-    done = False
+            # Set the old state s to the new state s'
+            state = new_state
+        
+        scores.append(score)
 
-    # For each step of the episode:
-    while done == False:
-        #env.render()
+        if episode % 100 == 0:
+            win_pct = np.mean(scores[-100:])
+            avg_score.append(win_pct)
+            if episode % 1000 == 0:
+                print("The win percentage after episode ", episode, " is ", win_pct )
+                print("Epsilon is currently ", round(agent.epsilon, 2))
 
-        # Choose an action a in current state s with an epsilon-greedy strategy
-        action = agent.choose_action(state)
-
-        # Perform action a, get new state s' and get reward r
-        new_state, reward, done, info = env.step(action)
-
-        # Plug in reward r into update equation to get new estimation for Q(s,a)
-        q_value = update_q_value(reward) # I have to write this function
-
-        # Set the old state s to the new state s'
-        state = new_state
-    
-    # Decrement epsilon over time to some minimal value
-    epsilon = epsilon * 0.95
-
-    scores.append(reward)
-
-    if episode % 100 == 0:
-        avg_score.append(np.mean(scores[-100:]))
-
-# Plot average score over 100 games (learning curve)
-plt.plot(avg_score)
-plt.show()
+    # Plot average score over 100 games (learning curve)
+    plt.plot(avg_score)
+    plt.show()
