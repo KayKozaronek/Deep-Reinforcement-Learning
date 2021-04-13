@@ -11,10 +11,10 @@ if __name__ == '__main__':
     discount_factor = 0.9
     epsilon = 1.0
     eps_min = 0.01
-    eps_dec = 0.999995
+    eps_dec = 0.9999995
     n_actions = 4
     n_states = 16
-    EPISODES = 500000
+    EPISODES = 1000000
 
     # Initialization of environment & Agent
     env = gym.make("FrozenLake-v0")
