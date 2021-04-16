@@ -3,9 +3,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch 
 
-class LinearClassifier(nn.Module):
-    def __init__(self, lr, n_classes, input_dims):
-        super_().__init()
+# nn.Module = Base class for all neural network modules.
+class LinearClassifier(nn.Module): 
+        def __init__(self, lr, n_classes, input_dims):
+        super().__init__()
 
         self.fc1 = nn.Linear(*input_dims, 128)
         self.fc2 = nn.Linear(128, 256)
@@ -25,7 +26,7 @@ class LinearClassifier(nn.Module):
         return layer3 
 
     def learn(self, data, labels):
-        self.optimizer.zero_grad()
+        self.optimizer.zero_grad() # zero out gradient from previous backward()
         data = torch.tensor(data).to(self.device)
         labels = torch.tensor(labels).to(self.device)
         
@@ -33,6 +34,6 @@ class LinearClassifier(nn.Module):
 
         cost = self.loss(predictions, labels)
 
-        cost.backward()
-        self.optimizer.step()
+        cost.backward() # accumulates gradient by addition for each parameter
+        self.optimizer.step() # does the update step with the calculated gradients
         
