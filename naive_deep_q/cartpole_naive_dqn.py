@@ -16,7 +16,7 @@ class LinearDeepQNetwork(nn.Module):
         self.fc2 = nn.Linear(128, n_actions)
         
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
-        self.loss = nn.MSELoss()
+        self.loss = nn.MSELoss() # Why MSE Loss?
         
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.to(self.device)
@@ -39,12 +39,15 @@ class Agent():
         self.eps_dec = eps_dec
         self.eps_min = eps_min
         
-        self.action_space = [i for i in range(self.n_actions)]
+        # Why is it defined this way?
+        self.action_space = [i for i in range(self.n_actions)] 
 
+        # Q is our state action value 
+        # We approximate Q with out DeepQN
         self.Q = LinearDeepQNetwork(self.lr, self.n_actions, self.input_dims)
 
     def choose_action(self, observation):
-        if np.random.random() < self.epsilon:
+        if np.random.random() > self.epsilon:
             state = torch.tensor(observation, dtype=torch.float).to(self.Q.device)
             actions = self.Q.forward(state)
             action = torch.argmax(actions).item()
@@ -55,7 +58,7 @@ class Agent():
 
     def decrement_epsilon(self):
         if self.epsilon > self.eps_min:
-            self.epsilon = self.epsilon -self.eps_dec
+            self.epsilon = self.epsilon - self.eps_dec
         else:
             self.epsilon = self.eps_min
 
